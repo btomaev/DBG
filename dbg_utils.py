@@ -59,7 +59,7 @@ def setup():
     chrome_options.add_argument("--disable-extensions")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox") # linux only
-    # chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--headless")
     chrome_options.add_argument('--log-level=3') 
     driver = webdriver.Chrome(options=chrome_options)
     driver.get("https://discord.com/login")
@@ -190,7 +190,8 @@ async def request(names,wait,file_name):
         if(grade > len(names)-1):
             grade = 0 
             print("\n=====================\nПарсинг завершен!\n=====================\n")
-            print(requests.get("http://uplandia.pythonanywere.com/lgtupdate?name="+file_name+"&data="+open('./'+file_name+'.html',"r").read()).text)
+            files = {'file': open('./'+file_name+'.html','rb')}
+            print(requests.post("http://uplandia.pythonanywhere.com/lgtupdate", files=files).text)
             timing = datetime.datetime.now()+datetime.timedelta(minutes = wait)
             begin()
     if(datetime.datetime.now() >= timing and ready):
