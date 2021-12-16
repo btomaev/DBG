@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 payload = {
     'email': '+79996080340',
     'password': 'Discord10741!'

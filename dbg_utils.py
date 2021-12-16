@@ -1,9 +1,8 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 import requests, time, datetime, asyncio, re, json, random
 import httplib2
-from styleframe import StyleFrame
 import pandas as pd
-import apiclient.discovery
-from oauth2client.service_account import ServiceAccountCredentials
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
