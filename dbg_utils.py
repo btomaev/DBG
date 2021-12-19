@@ -30,6 +30,9 @@ ready = True
 request_driver = None
 old_raw_messages = None
 timing = datetime.datetime.now()
+file_name = ""
+names = []
+wait = 0
 
 def begin():
     global table, pl_names, pl_types, pl_teams, pl_leggits, pl_mints, pl_seasons, pl_tiers, pl_users, pl_score, last_user, index, counter, grade, ready
@@ -51,16 +54,27 @@ def begin():
     grade = 0
     ready = True
 
-def setup():
-    global driver, request_driver, old_raw_messages
+def setup(f_name, waitfor, name_list):
+    global driver, request_driver, old_raw_messages, file_name, wait, names
     begin()
+    file_name = f_name
+    wait = waitfor
+    names = name_list
     chrome_options = Options()
     chrome_options.add_argument("--disable-extensions")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox") # linux only
-    chrome_options.add_argument("--headless")
+    if(open("config.txt","r").read()=="headless"):
+        chrome_options.add_argument("--headless")
     chrome_options.add_argument('--log-level=3') 
+    # chrome_options.add_argument('--proxy-server=180.247.131.229:8080')
     driver = webdriver.Chrome(options=chrome_options)
+    # cookies = list(open("cookies.dmp", "r").read())
+    # for cookie in cookies:
+    #     driver.add_cookie(cookie)
+    driver.get("https://discord.com/login")
+    driver.add_cookie({'domain': 'discord.com', 'expiry': 1797315530, 'httpOnly': True, 'name': '__sdcfduid', 'path': '/', 'sameSite': 'Lax', 'secure': True, 'value': '089b07815e3811ecbff509ac79d83bbb3566d964bcc7f465a9be3fa7debed3bc44f97f7071e4cb278374ef922adc7206'})
+    driver.add_cookie({'domain': 'discord.com', 'expiry': 1797315530, 'httpOnly': True, 'name': '__dcfduid', 'path': '/', 'sameSite': 'Lax', 'secure': True, 'value': '089b07805e3811ecbff509ac79d83bbb'})
     driver.get("https://discord.com/login")
     driver.find_element(By.NAME, "email").send_keys(payload["email"])
     driver.find_element(By.NAME, "password").send_keys(payload["password"])
@@ -87,11 +101,11 @@ def setup():
     # request_driver.find_element(By.XPATH, "//div[@href='/channels/874340202661961739/912354556350988359']").click()
     # time.sleep(1)
     # request_driver.find_element(By.XPATH, "//a[@href='/channels/874340202661961739/908170421306806272']").click()
-
+    # open("cookies.dmp","w").write(str(driver.get_cookies()))
     print("\n=====================\nБот запущен, все ОК!\n=====================\n")
 
-async def update(file_name):
-    global old_raw_messages, table
+async def update():
+    global old_raw_messages, table, file_name, wait, names
     global table, pl_names, pl_types, pl_teams, pl_leggits, pl_mints, pl_seasons, pl_tiers, pl_users, pl_score, last_user, index, counter
     raw_messages = driver.find_element(By.XPATH, "//ol[@data-list-id='chat-messages']").find_elements(By.XPATH, "//li")
     if(len(raw_messages) == len(old_raw_messages)):
@@ -105,6 +119,7 @@ async def update(file_name):
             # input()
             msg = message.text
             team = 'None'
+            is_target = False
             dt = []
             ctypes = []
             for tm in teams:
@@ -112,7 +127,6 @@ async def update(file_name):
                     team = tm
             if("User: " in msg):
                 user = msg[msg.find("User: ")+6:msg[msg.find("User: ")+6:].find("\n")+(len(msg)-len(msg[msg.find("User: ")+6:]))]
-                is_target = False
             for name in names:
                 if(user in name.lower()):
                     is_target = True
@@ -123,7 +137,6 @@ async def update(file_name):
                 if(item+"\n" in msg):
                     ctypes.append(item)
             ctypes.append("Arbaitung")
-
             if("Mementos" in msg):
                 for pos in msg[msg.find("Mementos\n")+8:msg.find(ctypes[0]+"\n")].split("\n"):
                     if('(' in pos and ')' in pos and ':' in pos):
@@ -136,8 +149,7 @@ async def update(file_name):
                     if('(' in pos and ')' in pos and ':' in pos):
                         dt.append(get_data(pos.replace(":fire:",""),ctypes[i],team))
                 data.update({"players": dt})
-            # print(data)
-            # print()
+
             if(last_user==user):
                 pass
             else:
@@ -147,15 +159,15 @@ async def update(file_name):
                 for head in headers:
                     if(user in head.lower()):
                         header = head
-                pl_names.append(header) 
-                index.append('#')
-                pl_teams.append('')
-                pl_leggits.append('')
-                pl_mints.append('')
-                pl_seasons.append('')
-                pl_tiers.append('')
-                pl_score.append('')
-                pl_users.append('')
+                pl_names.append("redify"+header) 
+                index.append('redify#')
+                pl_teams.append('redify')
+                pl_leggits.append('redify')
+                pl_mints.append('redify')
+                pl_seasons.append('redify')
+                pl_tiers.append('redify')
+                pl_score.append('redify')
+                pl_users.append('redify')
             for item in data["players"]:
                 pl_names.append(item["name"])
                 pl_teams.append(item["team"])
@@ -177,13 +189,15 @@ async def update(file_name):
                 'Season':pl_seasons
                 })
         df = pd.DataFrame(table, index=index)
-        sf = StyleFrame(df)
-        df.to_excel('./'+file_name+'.xlsx', sheet_name='Legits', index=True)
+        df.style.applymap(highlight)
+        # df.to_excel('./'+file_name+'.xlsx', sheet_name='Legits', index=True)
         df.to_html('./'+file_name+'.html', index=True)
+        html = open('./'+file_name+'.html', "r").read()
+        open('./'+file_name+'.html', "w").write(unistyle+"\n"+html.replace("<td>redify","<td class='redify'>").replace("<th>redify","<td class='redify'>"))
     old_raw_messages = raw_messages
 
-async def request(names,wait,file_name):
-    global request_driver, timing, grade, ready
+async def request():
+    global request_driver, timing, grade, ready, names, file_name, wait
     if(len(request_driver.find_elements(By.XPATH, "//*[text()='Legit FanScores Complete!']"))>0):
         ready = True
         if(grade > len(names)-1):
@@ -229,3 +243,8 @@ def get_data(pos, ptype, pteam):
     elif(": " in pos):
         fanscore = pos[pos.find(": ")+2:]
     return {"mint": pos[pos.find("(")+1:pos.find(")")], "name": player, "leggit": leggit, "season": season[2:], "type": ptype, 'team': pteam, "fanscore": fanscore}
+
+
+def highlight(s):
+    is_it = s.index.get_level_values(1) == '#'
+    return 'background-color: red'

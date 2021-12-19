@@ -5,15 +5,11 @@ payload = {
     'password': 'Discord10741!'
 }
 
-names = ["Retry_88", "OVALEXOLK", "Dashut", "Senko_"]
-
-names2 = ["Nimoryan"]
-
-headers = ["name acc: OVALEXOLK adress: 934 jefferson str Nashville",
-"name acc: Retry_88  Adress: 11001 chef menteur hwy",
-"name acc: Dashut  Adress: 1728 NUBELL ST Nashville",
-"name acc: Senko_  Adress: 2604 Belcourt Ave Nashville",
-"name acc: Nimoryan  Adress: no info"
+headers = ["name acc: OVALEXOLK adress: 6226 S Archer Ave (Chicago)",
+"name acc: Retry_88  Adress: 100 Portales Real (Bakersfield)",
+"name acc: Dashut  Adress: 204 Skeet CT (Bakersfield)",
+"name acc: Senko_  Adress:  6617 Hammond Way (Bakersfield)",
+"name acc: Nimoryan"
 ]
 
 types = [
@@ -51,6 +47,38 @@ seasons = [
 "2039",
 "2040"
 ]
+
+unistyle = """<style>
+
+    h2 {
+        text-align: center;
+        font-family: Helvetica, Arial, sans-serif;
+    }
+    .redify{
+        background-color: red;
+    }
+    table { 
+        margin-left: auto;
+        margin-right: auto;
+    }
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 5px;
+        text-align: center;
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 90%;
+    }
+    table tbody tr:hover {
+        background-color: #dddddd;
+    }
+    .wide {
+        width: 90%; 
+    }
+
+</style>"""
 
 leggits = [
 'Essential Cap',
